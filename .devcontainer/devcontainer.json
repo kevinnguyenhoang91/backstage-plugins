@@ -17,10 +17,7 @@
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
-      "extensions": [
-        "Orta.vscode-jest",
-        "ms-vscode.vscode-typescript-next"
-      ]
+      "extensions": ["Orta.vscode-jest", "ms-vscode.vscode-typescript-next"]
     }
   }
 

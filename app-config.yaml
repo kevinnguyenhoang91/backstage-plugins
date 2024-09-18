@@ -1,6 +1,8 @@
 app:
   title: Backstage Plugins Demo
-  baseUrl: http://127.0.0.1:3000
+  baseUrl: http://localhost:3000
+  listen:
+    host: 0.0.0.0
 
 organization:
   name: bbckr
@@ -12,17 +14,17 @@ backend:
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
-  baseUrl: http://127.0.0.1:7007
+  baseUrl: http://localhost:7007
   listen:
     port: 7007
     # Uncomment the following host directive to bind to specific interfaces
-    # host: 127.0.0.1
+    host: 0.0.0.0
   csp:
     connect-src: ["'self'", 'http:', 'https:']
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
-    origin: http://127.0.0.1:3000
+    origin: http://localhost:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   # This is for local development only, it is not recommended to use this in production

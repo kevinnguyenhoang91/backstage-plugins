@@ -14,7 +14,7 @@ export const scaffolderModule = createBackendModule({
         scaffolderActions: scaffolderActionsExtensionPoint,
       },
       async init({ scaffolderActions }) {
-        scaffolderActions.addActions(actions.createAcmeExampleAction());
+        scaffolderActions.addActions(actions.createGitCloneAction());
       },
     });
   },

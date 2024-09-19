@@ -1,8 +1,17 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { PassThrough } from 'stream';
-import { createAcmeExampleAction } from './example';
+import { createGitCloneAction } from './clone';
+import nodegit from 'nodegit';
 
-describe('acme:example', () => {
+afterEach(() => {
+  jest.resetAllMocks();
+});
+
+jest.mock('nodegit', () => ({
+  Clone: jest.fn(),
+}));
+
+describe('createGitCloneAction', () => {
   const mockContext = {
     logger: mockServices.logger.mock() as any,
     logStream: new PassThrough(),
@@ -10,26 +19,20 @@ describe('acme:example', () => {
     createTemporaryDirectory: jest.fn(),
     checkpoint: jest.fn(),
     getInitiatorCredentials: jest.fn(),
-    workspacePath: '.',
   };
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
 
   it('should call action', async () => {
     const mockCtx = {
       ...mockContext,
+      workspacePath: `.test/${crypto.randomUUID()}`,
       input: {
-        myParameter: 'test',
+        repositoryUrl: 'https://github.com/bbckr/backstage-plugins.git',
       },
     };
 
-    const action = createAcmeExampleAction();
+    const action = createGitCloneAction();
     await action.handler(mockCtx);
 
-    expect(mockContext.logger.info).toHaveBeenCalledWith(
-      'Running example template with parameters: test',
-    );
+    expect(nodegit.Clone).toHaveBeenCalledWith(mockCtx.input.repositoryUrl, expect.any(String));
   });
 });

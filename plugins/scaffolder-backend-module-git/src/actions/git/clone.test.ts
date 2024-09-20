@@ -2,14 +2,33 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { PassThrough } from 'stream';
 import { createGitCloneAction } from './clone';
 import nodegit from 'nodegit';
+import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
+
+const mockHead = 'mocksha';
+const mockDefaultBranch = 'main';
+
+jest.mock('nodegit', () => {
+  const Repository = {
+    getHeadCommit: jest.fn().mockResolvedValue({
+      sha: () => mockHead,
+    }),
+    getCurrentBranch: jest.fn().mockResolvedValue({
+      shorthand: () => mockDefaultBranch,
+    }),
+  };
+  const Clone = jest.fn().mockResolvedValue(Repository);
+  return {
+    Cred: jest.fn().mockImplementation(() => ({
+      userpassPlaintextNew: jest.fn(),
+    })),
+    Clone,
+  };
+});
 
 afterEach(() => {
   jest.resetAllMocks();
 });
-
-jest.mock('nodegit', () => ({
-  Clone: jest.fn(),
-}));
 
 describe('createGitCloneAction', () => {
   const mockContext = {
@@ -30,9 +49,32 @@ describe('createGitCloneAction', () => {
       },
     };
 
-    const action = createGitCloneAction();
+    const mockConfig = new ConfigReader({
+      integrations: {
+        github: [
+          {
+            host: 'github.com',
+            token: 'mocktoken',
+          },
+        ],
+      },
+    });
+    const mockIntegrations = ScmIntegrations.fromConfig(mockConfig);
+
+    const action = createGitCloneAction({ integrations: mockIntegrations });
     await action.handler(mockCtx);
 
-    expect(nodegit.Clone).toHaveBeenCalledWith(mockCtx.input.repositoryUrl, expect.any(String));
+    expect(mockCtx.output).toHaveBeenCalledTimes(2);
+    expect(mockCtx.output).toHaveBeenNthCalledWith(1, 'head', mockHead);
+    expect(mockCtx.output).toHaveBeenNthCalledWith(
+      2,
+      'defaultBranch',
+      mockDefaultBranch,
+    );
+    expect(nodegit.Clone).toHaveBeenCalledWith(
+      mockCtx.input.repositoryUrl,
+      expect.any(String),
+      expect.any(Object),
+    );
   });
 });

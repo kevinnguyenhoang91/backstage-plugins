@@ -19,10 +19,10 @@ jest.mock('nodegit', () => {
   };
   const Clone = jest.fn().mockResolvedValue(Repository);
   return {
-    Cred: jest.fn().mockImplementation(() => ({
-      userpassPlaintextNew: jest.fn(),
-    })),
     Clone,
+    Cred: {
+      userpassPlaintextNew: jest.fn(),
+    },
   };
 });
 
@@ -75,6 +75,11 @@ describe('createGitCloneAction', () => {
       mockCtx.input.repositoryUrl,
       expect.any(String),
       expect.any(Object),
+    );
+    expect(mockCtx.logger.warn).not.toHaveBeenCalled();
+    expect(nodegit.Cred.userpassPlaintextNew).toHaveBeenCalledWith(
+      'mocktoken',
+      'x-oauth-basic',
     );
   });
 });

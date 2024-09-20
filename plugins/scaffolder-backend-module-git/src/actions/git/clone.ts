@@ -9,13 +9,20 @@ export function createGitCloneAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const inputSchema = z.object({
-    repositoryUrl: z.string().url(),
-    workingDirectory: z.string().optional().default('./'),
+    repositoryUrl: z
+      .string()
+      .url()
+      .describe('The URL of the repository to clone'),
+    workingDirectory: z
+      .string()
+      .optional()
+      .default('./')
+      .describe('The directory to clone the repository into'),
   });
 
   const outputSchema = z.object({
-    head: z.string(),
-    defaultBranch: z.string(),
+    head: z.string().describe('The head commit of the repository'),
+    defaultBranch: z.string().describe('The default branch of the repository'),
   });
 
   return createTemplateAction<{
@@ -41,14 +48,12 @@ export function createGitCloneAction(options: {
       const { integrations } = options;
       const token = getToken(input.data.repositoryUrl, integrations);
       if (token) {
+        const creds = nodegit.Cred.userpassPlaintextNew(token, 'x-oauth-basic');
         cloneOptions = {
           fetchOpts: {
             callbacks: {
-              credentials: function () {
-                return nodegit.Cred.userpassPlaintextNew(
-                  token,
-                  'x-oauth-basic',
-                );
+              credentials: () => {
+                return creds;
               },
               certificateCheck: function () {
                 return 0;

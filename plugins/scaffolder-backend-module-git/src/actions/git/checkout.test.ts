@@ -1,9 +1,7 @@
 import { mockServices } from '@backstage/backend-test-utils';
 import { PassThrough } from 'stream';
-import { createGitCloneAction } from './clone';
+import { createGitCheckoutAction } from './checkout';
 import nodegit from 'nodegit';
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
 
 jest.mock('nodegit', () => {
   const Repository = {
@@ -23,21 +21,29 @@ jest.mock('nodegit', () => {
     getCurrentBranch: jest.fn().mockResolvedValue({
       shorthand: () => 'main',
     }),
+    createBranch: jest.fn(),
+    checkoutBranch: jest.fn(),
   };
-  const Clone = jest.fn().mockResolvedValue(Repository);
   return {
-    Clone,
-    Cred: {
-      userpassPlaintextNew: jest.fn(),
+    Repository: {
+      ...Repository,
+      open: jest.fn().mockResolvedValue(Repository),
     },
   };
 });
+
+jest.mock('@backstage/backend-plugin-api', () => ({
+  ...jest.requireActual('@backstage/backend-plugin-api'),
+  resolveSafeChildPath: jest.fn().mockImplementation((basePath, childPath) => {
+    return `${basePath}/${childPath}`;
+  }),
+}));
 
 afterEach(() => {
   jest.resetAllMocks();
 });
 
-describe('createGitCloneAction', () => {
+describe('createGitCheckoutAction', () => {
   const mockContext = {
     logger: mockServices.logger.mock() as any,
     logStream: new PassThrough(),
@@ -52,43 +58,34 @@ describe('createGitCloneAction', () => {
       ...mockContext,
       workspacePath: `.test/${crypto.randomUUID()}`,
       input: {
-        repositoryUrl: 'https://github.com/bbckr/backstage-plugins.git',
+        branchName: 'my-new-branch',
+        shouldCreate: true,
       },
     };
 
-    const mockConfig = new ConfigReader({
-      integrations: {
-        github: [
-          {
-            host: 'github.com',
-            token: 'mocktoken',
-          },
-        ],
-      },
-    });
-    const mockIntegrations = ScmIntegrations.fromConfig(mockConfig);
+    await createGitCheckoutAction().handler(mockCtx);
 
-    const action = createGitCloneAction({ integrations: mockIntegrations });
-    await action.handler(mockCtx);
-
-    expect(mockCtx.output).toHaveBeenCalledTimes(2);
-    expect(mockCtx.output).toHaveBeenNthCalledWith(1, 'head', {
+    expect(nodegit.Repository.open).toHaveBeenCalledWith(
+      `${mockCtx.workspacePath}/./.git`,
+    );
+    // @ts-ignore
+    expect(nodegit.Repository.createBranch).toHaveBeenCalledTimes(1);
+    // @ts-ignore
+    expect(nodegit.Repository.createBranch).toHaveBeenCalledWith(
+      'my-new-branch',
+      expect.any(Object),
+    );
+    // @ts-ignore
+    expect(nodegit.Repository.checkoutBranch).toHaveBeenCalledWith(
+      'my-new-branch',
+      { checkoutStrategy: 1 },
+    );
+    expect(mockCtx.output).toHaveBeenCalledWith('head', {
       sha: 'mocksha',
       message: 'mockmessage',
       author: { name: 'mockauthor', email: 'author@mock.com' },
       committer: { name: 'mockcommitter', email: 'committer@mock.com' },
       date: '2024-01-01T00:00:00.000Z',
     });
-    expect(mockCtx.output).toHaveBeenNthCalledWith(2, 'defaultBranch', 'main');
-    expect(nodegit.Clone).toHaveBeenCalledWith(
-      mockCtx.input.repositoryUrl,
-      expect.stringContaining(mockCtx.workspacePath),
-      expect.any(Object),
-    );
-    expect(mockCtx.logger.warn).not.toHaveBeenCalled();
-    expect(nodegit.Cred.userpassPlaintextNew).toHaveBeenCalledWith(
-      'mocktoken',
-      'x-oauth-basic',
-    );
   });
 });

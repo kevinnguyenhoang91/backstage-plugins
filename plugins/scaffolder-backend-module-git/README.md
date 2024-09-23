@@ -11,7 +11,7 @@ An example template can be found [here](examples/software-templates/demo-scaffol
 In the repository root of your Backstage project, run:
 
 ```sh
-yarn add --cwd packages/backend @seatgeek/backstage-plugin-scaffolder-backend-module-hcl
+yarn add --cwd packages/backend @bbckr/backstage-plugin-scaffolder-backend-module-git
 ```
 
 Lastly, import the package into the backend:

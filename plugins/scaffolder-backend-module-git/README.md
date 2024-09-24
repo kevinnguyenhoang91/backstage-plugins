@@ -14,7 +14,7 @@ In the repository root of your Backstage project, run:
 yarn add --cwd packages/backend @bbckr/backstage-plugin-scaffolder-backend-module-git
 ```
 
-Lastly, import the package into the backend:
+Then import the package into the backend:
 
 ```js
 // packages/backend/src/index.ts
@@ -23,7 +23,21 @@ const backend = createBackend();
 backend.add(import('@bbckr/backstage-plugin-scaffolder-backend-module-git'));
 ```
 
-Now the actions should be registed, and you can use them in your software templates.
+Optionally, you can configure authentication through the [Integrations Config](https://backstage.io/docs/integrations/). If you try to clone a private repository, the plugin will match the host against the integrations configuration to pull token it needs for auth.
+
+```yaml
+integrations:
+  github:
+    - host: github.com
+      token: ${GITHUB_TOKEN}
+  gitlab:
+    - host: gitlab.com
+      token: ${GITLAB_TOKEN}
+    - host: gitlab.example.com
+      token: ${GITLAB_EXAMPLE_TOKEN}
+```
+
+Now the actions should be registered, and you can use them in your software templates.
 
 ## Actions
 

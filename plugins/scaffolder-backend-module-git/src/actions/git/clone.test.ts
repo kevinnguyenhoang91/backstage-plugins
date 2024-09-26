@@ -5,6 +5,17 @@ import nodegit from 'nodegit';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
+jest.mock('../../integration', () => {
+  return {
+    initScmIntegrationClient: jest.fn().mockReturnValue({
+      getUserInfo: jest.fn().mockResolvedValue({
+        userName: 'Backstage Scaffolder',
+        email: 'scaffolder@backstage.io',
+      }),
+    }),
+  };
+});
+
 jest.mock('nodegit', () => {
   const Config = {
     setString: jest.fn(),
@@ -37,7 +48,9 @@ jest.mock('nodegit', () => {
   };
 });
 
-afterEach(() => {
+jest.mock('');
+
+beforeEach(() => {
   jest.clearAllMocks();
 });
 
@@ -76,10 +89,7 @@ describe('createGitCloneAction', () => {
     await action.handler(mockCtx);
 
     expect(mockCtx.logger.info).toHaveBeenCalledWith(
-      'Using user.name Backstage Scaffolder',
-    );
-    expect(mockCtx.logger.info).toHaveBeenCalledWith(
-      'Using user.email scaffolder@backstage.io',
+      "Git config set with 'Backstage Scaffolder <scaffolder@backstage.io>'",
     );
 
     expect(mockCtx.output).toHaveBeenCalledTimes(2);

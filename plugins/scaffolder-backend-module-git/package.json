@@ -2,6 +2,15 @@
   "name": "@bbckr/backstage-plugin-scaffolder-backend-module-git",
   "description": "The git module for @backstage/plugin-scaffolder-backend",
   "version": "0.0.0-semantically-released",
+  "author": "bbckr <b@bckr.io>",
+  "homepage": "https://github.com/bbckr/backstage-plugins/tree/main/plugins/scaffolder-backend-module-git",
+  "repository": "github:bbckr/backstage-plugins",
+  "keywords": [
+    "backstage",
+    "git",
+    "plugin",
+    "scaffolder"
+  ],
   "main": "src/index.ts",
   "types": "src/index.ts",
   "license": "Apache-2.0",

@@ -7,7 +7,7 @@ import * as actions from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
 export const scaffolderModule = createBackendModule({
-  moduleId: 'bbckr-scaffolder-backend-module-git',
+  moduleId: 'internal-scaffolder-backend-module-git',
   pluginId: 'scaffolder',
   register({ registerInit }) {
     registerInit({
@@ -24,6 +24,7 @@ export const scaffolderModule = createBackendModule({
           actions.createGitAddAction(),
           actions.createGitCommitAction(),
           actions.createGitPushAction({ integrations }),
+          actions.createGitCommandAction(),
         );
       },
     });

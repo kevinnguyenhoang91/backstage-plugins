@@ -4,7 +4,7 @@
   "version": "0.0.0-semantically-released",
   "author": "bbckr <b@bckr.io>",
   "homepage": "https://github.com/bbckr/backstage-plugins/tree/main/plugins/scaffolder-backend-module-git",
-  "repository": "github:bbckr/backstage-plugins",
+  "repository": "github:kevinnguyenhoang91/backstage-plugins",
   "keywords": [
     "backstage",
     "git",

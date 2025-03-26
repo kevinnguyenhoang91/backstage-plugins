@@ -41,6 +41,12 @@ export function createGitCloneAction(options: {
       .optional()
       .default('.')
       .describe('The directory to clone the repository into'),
+
+      shallowClone: z
+      .boolean()
+      .optional()
+      .default(false)
+      .describe('Whether to perform a shallow clone'),
   });
 
   const outputSchema = z.object({
@@ -55,6 +61,8 @@ export function createGitCloneAction(options: {
       email: string;
     };
     workingDirectory?: string;
+
+    shallowClone?: boolean;
   }>({
     id: 'git:clone',
     description: 'Clone a git repository',
@@ -74,11 +82,18 @@ export function createGitCloneAction(options: {
         input.data.repositoryUrl,
         options.integrations,
       );
+
+      const shallowCloneOpt = {
+        '--depth': input.data.shallowClone ? 1 : undefined,
+      }
       const cloneOptions: nodegit.CloneOptions = {
         fetchOpts: {
           callbacks: {
             credentials: getCredentialsCallback(integration),
           },
+        },
+        checkoutOpts: {
+          ...shallowCloneOpt
         },
       };
 

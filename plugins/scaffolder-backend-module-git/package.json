@@ -1,5 +1,5 @@
 {
-  "name": "@bbckr/backstage-plugin-scaffolder-backend-module-git",
+  "name": "@internal/backstage-plugin-scaffolder-backend-module-git",
   "description": "The git module for @backstage/plugin-scaffolder-backend",
   "version": "0.0.0-semantically-released",
   "author": "bbckr <b@bckr.io>",
@@ -23,7 +23,7 @@
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
     "pluginPackages": [
-      "@bbckr/backstage-plugin-scaffolder-backend-module-git"
+      "@internal/backstage-plugin-scaffolder-backend-module-git"
     ],
     "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
@@ -41,7 +41,7 @@
     "@backstage/integration": "^1.15.0",
     "@backstage/plugin-scaffolder-node": "^0.4.11",
     "@types/nodegit": "^0.28.7",
-    "nodegit": "^0.27.0",
+    "nodegit": "next",
     "zod": "^3.23.8"
   },
   "devDependencies": {

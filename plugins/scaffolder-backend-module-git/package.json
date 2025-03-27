@@ -41,7 +41,7 @@
     "@backstage/integration": "^1.15.0",
     "@backstage/plugin-scaffolder-node": "^0.4.11",
     "@types/nodegit": "^0.28.7",
-    "nodegit": "next",
+    "nodegit": "0.28.0-alpha.30",
     "zod": "^3.23.8"
   },
   "devDependencies": {

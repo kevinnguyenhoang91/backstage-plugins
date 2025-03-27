@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
 
 export function createGitCommandAction() {
   const inputSchema = z.object({
@@ -57,7 +57,7 @@ export function createGitCommandAction() {
       await new Promise<void>((resolve, reject) => {
         const cmd = spawn(runCmd, input.data.args, {
           cwd: localPath,
-          shell: true,
+          shell: '/bin/bash',
         });
 
         cmd.stdout.on('data', (data: any) => {

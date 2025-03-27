@@ -75,15 +75,16 @@ export function createGitPushAction(options: {
 
       const integration = getIntegration(remoteUrl, options.integrations);
       
-      var mergePushOptions = {};
-      if (input.data.mergePush) {
-        mergePushOptions = {
-          'merge_request.create': true,
-          'merge_request.title': input.data.mergePushTitle,
-          'merge_request_target': input.data.mergePushTarget,
-          'merge_request.remove_source_branch': input.data.mergePushDeleteSourceBranch,
-        };
-      }
+      // var mergePushOptions = {};
+      // if (input.data.mergePush) {
+      //   mergePushOptions = {
+      //     'merge_request.create': true,
+      //     'merge_request.title': input.data.mergePushTitle,
+      //     'merge_request_target': input.data.mergePushTarget,
+      //     'merge_request.remove_source_branch': input.data.mergePushDeleteSourceBranch,
+      //   };
+      // }
+
       await remote.push([`${currentBranch.name()}:${currentBranch.name()}`], {
         callbacks: {
           credentials: getCredentialsCallback(integration),

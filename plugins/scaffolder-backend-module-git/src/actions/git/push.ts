@@ -19,6 +19,26 @@ export function createGitPushAction(options: {
       .optional()
       .default('.')
       .describe('The directory to clone the repository into'),
+    mergePush: z
+      .boolean()
+      .optional()
+      .default(false)
+      .describe('Whether to merge the changes before pushing'),
+    mergePushTitle: z
+      .string()
+      .optional()
+      .default('')
+      .describe('The title of the merge commit'),
+    mergePushTarget: z
+      .string()
+      .optional()
+      .default('master')
+      .describe('The target branch to merge into'),
+    mergePushDeleteSourceBranch: z
+      .boolean()
+      .optional()
+      .default(true)
+      .describe('Whether to delete the source branch after merging'),
   });
 
   return createTemplateAction<{
@@ -54,10 +74,21 @@ export function createGitPushAction(options: {
       ctx.logger.info(`Pushing branch ${currentBranch.shorthand()}`);
 
       const integration = getIntegration(remoteUrl, options.integrations);
+      
+      var mergePushOptions = {};
+      if (input.data.mergePush) {
+        mergePushOptions = {
+          'merge_request.create': true,
+          'merge_request.title': input.data.mergePushTitle,
+          'merge_request_target': input.data.mergePushTarget,
+          'merge_request.remove_source_branch': input.data.mergePushDeleteSourceBranch,
+        };
+      }
       await remote.push([`${currentBranch.name()}:${currentBranch.name()}`], {
         callbacks: {
           credentials: getCredentialsCallback(integration),
         },
+        ...mergePushOptions,
       });
     },
   });

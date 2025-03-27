@@ -88,7 +88,12 @@ export function createGitPushAction(options: {
         callbacks: {
           credentials: getCredentialsCallback(integration),
         },
-        ...mergePushOptions,
+        customHeaders: [
+          'merge_request.create',
+          'merge_request.title=' + input.data.mergePushTitle,
+          'merge_request_target=' + input.data.mergePushTarget,
+          'merge_request.remove_source_branch'
+        ]
       });
     },
   });

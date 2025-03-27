@@ -74,7 +74,7 @@ export function createGitPushAction(options: {
       ctx.logger.info(`Pushing branch ${currentBranch.shorthand()}`);
 
       const integration = getIntegration(remoteUrl, options.integrations);
-      
+
       // var mergePushOptions = {};
       // if (input.data.mergePush) {
       //   mergePushOptions = {

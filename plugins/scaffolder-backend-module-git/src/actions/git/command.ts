@@ -28,7 +28,7 @@ export function createGitCommandAction() {
   });
 
   return createTemplateAction<{
-    command?: string[];
+    command?: string;
     args?: string[];
     workingDirectory?: string;
   }>({

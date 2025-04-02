@@ -6449,7 +6449,8 @@ __metadata:
     "@backstage/integration": "npm:^1.15.0"
     "@backstage/plugin-scaffolder-node": "npm:^0.4.11"
     "@types/nodegit": "npm:^0.28.7"
-    nodegit: "npm:next"
+    merge-yaml: "npm:^1.1.0"
+    nodegit: "npm:0.28.0-alpha.30"
     zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
@@ -23149,6 +23150,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge-yaml@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "merge-yaml@npm:1.1.0"
+  dependencies:
+    js-yaml: "npm:^3.6.1"
+    lodash.merge: "npm:^4.6.2"
+  checksum: 10c0/4276aca82548f0fb7703cbe86fa6b625e18326858efaeb44fb081cc71801581a23f0c957975d0fa335d8bf99fbb9fa71a9a3b6600dd8c14d96df39d38cf7f6c9
+  languageName: node
+  linkType: hard
+
 "merge2@npm:^1.3.0, merge2@npm:^1.4.1":
   version: 1.4.1
   resolution: "merge2@npm:1.4.1"
@@ -24338,7 +24349,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nodegit@npm:next":
+"nodegit@npm:0.28.0-alpha.30":
   version: 0.28.0-alpha.30
   resolution: "nodegit@npm:0.28.0-alpha.30"
   dependencies:

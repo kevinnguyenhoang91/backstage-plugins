@@ -24,7 +24,7 @@ export const scaffolderModule = createBackendModule({
           actions.createGitAddAction(),
           actions.createGitCommitAction(),
           actions.createGitPushAction({ integrations }),
-          actions.createGitCommandAction(),
+          actions.createGitCommandAction({ integrations }),
         );
       },
     });

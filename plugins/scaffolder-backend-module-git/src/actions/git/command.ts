@@ -2,8 +2,13 @@ import { z } from 'zod';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { spawn } from 'child_process';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import nodegit from 'nodegit';
+import { getIntegration } from './utils';
 
-export function createGitCommandAction() {
+export function createGitCommandAction(options: {
+  integrations: ScmIntegrationRegistry;
+}) {
   const inputSchema = z.object({
     command: z
       .string()
@@ -20,6 +25,12 @@ export function createGitCommandAction() {
       .default([])
       .describe('The arguments to pass to the bash command'),
 
+    remoteName: z
+      .string()
+      .optional()
+      .default('origin')
+      .describe('The remote to push to'),
+
     workingDirectory: z
       .string()
       .optional()
@@ -31,6 +42,7 @@ export function createGitCommandAction() {
     command?: string;
     args?: string[];
     workingDirectory?: string;
+    remoteName?: string;
   }>({
     id: 'bash:command',
     description: 'Run a bash command',
@@ -45,14 +57,28 @@ export function createGitCommandAction() {
         );
       }
 
+      const localGitPath = resolveSafeChildPath(
+        resolveSafeChildPath(ctx.workspacePath, input.data.workingDirectory),
+        '.git',
+      );
+
+      const repository = await nodegit.Repository.open(localGitPath);
+
       const localPath = resolveSafeChildPath(ctx.workspacePath, input.data.workingDirectory)
+
+      const remote = await repository.getRemote(input.data.remoteName);
+      const remoteUrl = remote.url();
+
+      const currentBranch = await repository.getCurrentBranch();
+      ctx.logger.info(`Pushing branch ${currentBranch.shorthand()}`);
+
+      const integration = getIntegration(remoteUrl, options.integrations);
 
       var runCmd = 'bash';
       if (input.data.command) {
         runCmd = input.data.command;
+        runCmd = runCmd.replace(/token/g, integration?.config.token || '');
       }
-
-      ctx.logger.info(`Running command: ${runCmd} ${input.data.args.join(' ')}in ${localPath}`);
 
       await new Promise<void>((resolve, reject) => {
         const cmd = spawn(runCmd, input.data.args, {

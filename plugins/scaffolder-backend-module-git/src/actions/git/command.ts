@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { spawn } from 'child_process';
-import { ScmIntegrationRegistry } from '@backstage/integration';
+import { ScmIntegration, ScmIntegrationRegistry } from '@backstage/integration';
 import nodegit from 'nodegit';
 import { getIntegration } from './utils';
 
@@ -44,7 +44,7 @@ export function createGitCommandAction(options: {
     workingDirectory?: string;
     remoteName?: string;
   }>({
-    id: 'bash:command',
+    id: 'git:command',
     description: 'Run a bash command',
     schema: {
       input: inputSchema,
@@ -57,27 +57,27 @@ export function createGitCommandAction(options: {
         );
       }
 
-      const localGitPath = resolveSafeChildPath(
-        resolveSafeChildPath(ctx.workspacePath, input.data.workingDirectory),
-        '.git',
-      );
-
-      const repository = await nodegit.Repository.open(localGitPath);
-
       const localPath = resolveSafeChildPath(ctx.workspacePath, input.data.workingDirectory)
-
-      const remote = await repository.getRemote(input.data.remoteName);
-      const remoteUrl = remote.url();
-
-      const currentBranch = await repository.getCurrentBranch();
-      ctx.logger.info(`Pushing branch ${currentBranch.shorthand()}`);
-
-      const integration = getIntegration(remoteUrl, options.integrations);
-
-      var runCmd = 'bash';
+      var runCmd = 'git';
       if (input.data.command) {
         runCmd = input.data.command;
+      }
+
+      try {
+        const localGitPath = resolveSafeChildPath(
+          resolveSafeChildPath(ctx.workspacePath, input.data.workingDirectory),
+          '.git',
+        );
+        const repository = await nodegit.Repository.open(localGitPath);
+        const remote = await repository.getRemote(input.data.remoteName);
+        const remoteUrl = remote.url();
+        const currentBranch = await repository.getCurrentBranch();
+        ctx.logger.info(`Pushing branch ${currentBranch.shorthand()}`);
+
+        const integration = getIntegration(remoteUrl, options.integrations);
         runCmd = runCmd.replace(/token/g, integration?.config.token || '');
+      } catch (error) {
+        ctx.logger.error(`Failed to resolve .git path: ${error.message}`);
       }
 
       await new Promise<void>((resolve, reject) => {

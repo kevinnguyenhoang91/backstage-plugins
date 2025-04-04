@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { spawn } from 'child_process';
-import { ScmIntegration, ScmIntegrationRegistry } from '@backstage/integration';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import nodegit from 'nodegit';
 import { getIntegration } from './utils';
 

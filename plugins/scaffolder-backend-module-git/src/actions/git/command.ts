@@ -76,8 +76,8 @@ export function createGitCommandAction(options: {
 
         const integration = getIntegration(remoteUrl, options.integrations);
         runCmd = runCmd.replace(/token/g, integration?.config.token || '');
-      } catch (error) {
-        ctx.logger.error(`Failed to resolve .git path: ${error.message}`);
+      } catch (error: any) {
+        ctx.logger.error(`Failed to resolve .git path: ${error}`);
       }
 
       await new Promise<void>((resolve, reject) => {

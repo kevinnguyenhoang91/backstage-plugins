@@ -39,7 +39,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "^1.0.0",
     "@backstage/integration": "^1.15.0",
-    "@backstage/plugin-scaffolder-node": "^0.4.11",
+    "@backstage/plugin-scaffolder-node": "^0.12.5",
     "@types/nodegit": "^0.28.7",
     "merge-yaml": "^1.1.0",
     "nodegit": "0.28.0-alpha.30",
